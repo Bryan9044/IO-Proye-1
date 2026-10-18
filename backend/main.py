@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 from replacement_team import contrato, llenarContextos, calcularG, formatearResultado
 from optimal_bst import arbol_BST
 from pydantic import BaseModel
+from matrix_multiplication import multiplicacion_matrices
+
 
 app = FastAPI() 
 
@@ -50,4 +52,22 @@ def obtenerArbol(req: ArbolRequest):
         "arbol": arbol,
         "costo": costo,
         "keysOrdenadas": keysOrdenadas
+    }
+
+
+class MatrizRequest(BaseModel):
+    n: int
+    dimensiones: list[int]
+
+@app.post("/multiplicacionMatrices")
+def obtenerMatriz(req: MatrizRequest):
+    try:
+        tableM, tableP, parentizacion, costo = multiplicacion_matrices(req.n, req.dimensiones)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {
+        "tableM": tableM,
+        "tableP": tableP,
+        "parentizacion": parentizacion,
+        "costo": costo,
     }
