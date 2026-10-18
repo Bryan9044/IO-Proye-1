@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from replacement_team import contrato, llenarContextos, calcularG, formatearResultado
+from optimal_bst import arbol_BST
+from pydantic import BaseModel
 
 app = FastAPI() 
 
@@ -29,3 +31,23 @@ def postAlgoritmo(paramContrato: contrato):
     resultado = calcularG(paramContrato, paramCtx)
 
     return formatearResultado(resultado)
+
+
+class ArbolRequest(BaseModel):
+    keys: list[str]
+    weights: list[float]
+
+
+@app.post("/arbolDeBusqueda")
+def obtenerArbol(req: ArbolRequest):
+    try:
+        tableA, tableR, arbol, costo, keysOrdenadas = arbol_BST(len(req.keys), req.keys, req.weights)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {
+        "tableA": tableA,
+        "tableR": tableR,
+        "arbol": arbol,
+        "costo": costo,
+        "keysOrdenadas": keysOrdenadas
+    }
