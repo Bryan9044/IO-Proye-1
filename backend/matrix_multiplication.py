@@ -3,17 +3,14 @@
 
 def multiplicacion_matrices(n,dimensiones: list[int]):
     if (n < 1 or n > 10):
-        print("Error: El número de matrices debe estar entre 1 a 10")
-        return "Error: El número de matrices debe estar entre 1 a 10"
+        raise ValueError("Error: El número de matrices debe estar entre 1 a 10")
 
     if (len(dimensiones) != n+1):
-        print("Error: El tamaño de dimensiones solo puede ser n + 1")
-        return "Error: El tamaño de dimensiones solo puede ser n + 1"
+        raise ValueError("Error: El tamaño de dimensiones solo puede ser n + 1")
 
     for elemento in dimensiones:
         if not isinstance(elemento, int) or elemento <= 0:
-            print("Error: Los numeros de las matrices deben ser enteros y positivos")
-            return "Error: Los numeros de las matrices deben ser enteros y positivos"
+            raise ValueError("Error: Los numeros de las matrices deben ser enteros y positivos")
     
 
     rc = len(dimensiones) - 1
@@ -42,9 +39,11 @@ def multiplicacion_matrices(n,dimensiones: list[int]):
     for row in tableP:
         print(row)
 
-    print("parentizacion:", parentizacion(tableP, 0, n - 1))
+    res = parentizacion(tableP, 0, n - 1)
+    costoMinimo = tableM[0][n-1]
 
-    return tableM
+
+    return tableM, tableP, res, costoMinimo
 
 
 def creacionPares(elementos):
@@ -111,7 +110,8 @@ def formulaMultiplicacionMatrices(listaProbar, tableM, aList, tableP):
 
 
 
-dimensiones = [10, 30, 5, 60, 10, 20, 40, 15, 25, 35, 8]
-multiplicacion_matrices(10,dimensiones)
+if __name__ == "__main__": 
+    dimensiones = [10, 30, 5, 60, 10, 20, 40, 15, 25, 35, 8]
+    multiplicacion_matrices(10,dimensiones)
 
 
