@@ -3,9 +3,17 @@ from replacement_team import contrato, llenarContextos, calcularG, formatearResu
 from optimal_bst import arbol_BST
 from pydantic import BaseModel
 from matrix_multiplication import multiplicacion_matrices
-
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI() 
+
+#El cors es para que no haya problemas al hacer peticiones desde el frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/health")
 def health():
