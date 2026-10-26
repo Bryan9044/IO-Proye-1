@@ -25,7 +25,8 @@ Formato de resultado
 {
     "variante": variante,
     "resultado": alto,
-    "tabla": []
+    "tabla": [],
+    "tablaSolucion":[],
     "solucion": []
 }
 """
@@ -61,6 +62,7 @@ def mochila01(variante, capacidad, objetos):
             "variante": variante,
             "resultado": tabla[n][capacidad],
             "tabla": tabla,
+            "tablaSolucion": tablaSolucion,
             "solucion": solucion,
     }
 
@@ -102,6 +104,7 @@ def mochilaAcotada(variante,capacidad,objetos):
             "variante": variante,
             "resultado": tabla[n][capacidad],
             "tabla": tabla,
+            "tablaSolucion": tablaSolucion,
             "solucion": solucion,
     }
 
@@ -138,6 +141,7 @@ def mochilaNAcotada(variante,capacidad,objetos):
             "variante": variante,
             "resultado": tabla[n][capacidad],
             "tabla": tabla,
+            "tablaSolucion": tablaSolucion,
             "solucion": solucion,
     }
 
