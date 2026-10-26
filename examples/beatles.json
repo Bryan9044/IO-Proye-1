@@ -1,0 +1,9 @@
+{
+  "algoritmo": "abb-optimo",
+  "llaves": [
+    { "llave": "Harrison", "peso": 18 },
+    { "llave": "Lennon", "peso": 32 },
+    { "llave": "McCartney", "peso": 39 },
+    { "llave": "Starr", "peso": 11 }
+  ]
+}
