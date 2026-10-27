@@ -13,3 +13,10 @@ export interface BstResponse {
     keysOrdenadas: string[];
 }
 
+export interface MatrixMultiplicationResponse {
+    tableM: number[][];
+    tableP: (number | "#")[][];
+    parentizacion: string;
+    costo: number;
+}
+

@@ -2,14 +2,14 @@
 
 
 def multiplicacion_matrices(n,dimensiones: list[int]):
-    if (n < 1 or n > 10):
+    if type(n) is not int or n < 1 or n > 10:
         raise ValueError("Error: El número de matrices debe estar entre 1 a 10")
 
     if (len(dimensiones) != n+1):
         raise ValueError("Error: El tamaño de dimensiones solo puede ser n + 1")
 
     for elemento in dimensiones:
-        if not isinstance(elemento, int) or elemento <= 0:
+        if type(elemento) is not int or elemento <= 0:
             raise ValueError("Error: Los numeros de las matrices deben ser enteros y positivos")
     
 
