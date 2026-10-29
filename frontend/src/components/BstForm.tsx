@@ -1,17 +1,8 @@
 import { useState, type FormEvent } from 'react'
+import { fileInputClass, primaryButtonClass, secondaryButtonClass, textInputClass } from './formStyles'
 
 type Props = {
   onSubmit: (keys: string[], weights: number[]) => void
-}
-
-const inputStyle = {
-  boxSizing: 'border-box' as const,
-  width: '100%',
-  padding: '14px 16px',
-  border: '1px solid #94a3b8',
-  borderRadius: '10px',
-  fontSize: '17px',
-  outlineColor: '#7c3aed',
 }
 
 export default function BstForm({ onSubmit }: Props) {
@@ -44,7 +35,12 @@ export default function BstForm({ onSubmit }: Props) {
     const chosenName = window.prompt('¿Qué nombre quieres para el archivo?', 'arbol-busqueda')
     if (chosenName === null) return
 
-    const safeName = chosenName.trim().replace(/[<>:"/\\|?*\u0000-\u001F]/g, '-')
+    const safeName = chosenName
+      .trim()
+      .replace(/[<>:"/\\|?*]/g, '-')
+      .split('')
+      .map((character) => (character.charCodeAt(0) < 32 ? '-' : character))
+      .join('')
     if (!safeName) {
       alert('Escribe un nombre válido para el archivo.')
       return
@@ -68,19 +64,9 @@ export default function BstForm({ onSubmit }: Props) {
     <form
       onSubmit={handleSubmit}
       className="mx-auto my-6 w-full max-w-xl rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm dark:border-slate-700 dark:bg-slate-900"
-      style={{
-        width: '100%',
-        maxWidth: '560px',
-        margin: '24px auto',
-        padding: '24px',
-        boxSizing: 'border-box',
-        border: '1px solid #cbd5e1',
-        borderRadius: '12px',
-        textAlign: 'left',
-      }}
     >
-      <div style={{ marginBottom: '18px' }}>
-        <label htmlFor="bst-keys" className="mb-2 block font-semibold text-slate-700 dark:text-slate-200" style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>
+      <div className="mb-5">
+        <label htmlFor="bst-keys" className="mb-2 block font-semibold text-slate-700 dark:text-slate-200">
           Llaves
         </label>
         <input
@@ -89,11 +75,11 @@ export default function BstForm({ onSubmit }: Props) {
           placeholder="Ejemplo: ana, ben, carlos"
           value={keysText}
           onChange={(event) => setKeysText(event.target.value)}
-          style={inputStyle}
+          className={textInputClass}
         />
       </div>
-      <div style={{ marginBottom: '20px' }}>
-        <label htmlFor="bst-weights" className="mb-2 block font-semibold text-slate-700 dark:text-slate-200" style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>
+      <div className="mb-6">
+        <label htmlFor="bst-weights" className="mb-2 block font-semibold text-slate-700 dark:text-slate-200">
           Pesos
         </label>
         <input
@@ -103,50 +89,31 @@ export default function BstForm({ onSubmit }: Props) {
           placeholder="Ejemplo: 0.4, 0.35, 0.25"
           value={weightsText}
           onChange={(event) => setWeightsText(event.target.value)}
-          style={inputStyle}
+          className={textInputClass}
         />
       </div>
       <button
         type="submit"
-        className="rounded-lg bg-violet-700 px-5 py-3 font-semibold text-white transition hover:bg-violet-800 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2"
-        style={{
-          padding: '12px 22px',
-          border: 0,
-          borderRadius: '9px',
-          backgroundColor: '#6d28d9',
-          color: '#fff',
-          fontSize: '16px',
-          fontWeight: 600,
-          cursor: 'pointer',
-        }}
+        className={primaryButtonClass}
       >
         Calcular árbol
       </button>
       <button
         type="button"
         onClick={handleSaveJson}
-        style={{
-          marginLeft: '10px',
-          padding: '12px 22px',
-          border: '1px solid #6d28d9',
-          borderRadius: '9px',
-          backgroundColor: '#fff',
-          color: '#6d28d9',
-          fontSize: '16px',
-          fontWeight: 600,
-          cursor: 'pointer',
-        }}
+        className={`${secondaryButtonClass} ml-2.5`}
       >
         Guardar JSON
       </button>
-      <div style={{ marginTop: '18px' }}>
-        <label htmlFor="bst-json-file" style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>
+      <div className="mt-5">
+        <label htmlFor="bst-json-file" className="mb-2 block font-semibold text-slate-700 dark:text-slate-200">
           Cargar archivo JSON
         </label>
         <input
           id="bst-json-file"
           type="file"
           accept=".json,application/json"
+          className={fileInputClass}
           onChange={async (event) => {
             const file = event.target.files?.[0]
             if (!file) return
