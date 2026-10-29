@@ -4,6 +4,7 @@ import Card from '../components/Card'
 
 import OptimalBstPage from './OptimalBstPage'
 import SportsSeriesPage from './SportsSeriesPage'
+import EquipmentReplacementPage from './EquipmentReplacementPage'
 import MatrixMultiplicationPage from './MatrixMultiplicationPage'
 
 /* ==========================================================================
@@ -29,7 +30,7 @@ interface DatosSeccion {
 
 const secciones: Record<string, DatosSeccion> = {
     '/equipos': {
-        descripcion: 'Aqui va el resto.',
+        descripcion: 'Calcule el costo mínimo y las rutas óptimas para reemplazar equipos.',
         fuente: 'x',
     },
     '/series': {
@@ -133,14 +134,7 @@ function PaginaSimple({ titulo, texto, fuente, fuenteUrl }: PaginaSimpleProps) {
     )
 }
 
-const Equipos = () => (
-    <PaginaSimple
-    titulo="Equipos"
-    texto="Aquí va el contenido de la página de servicios."
-    fuente={secciones['/equipos'].fuente}
-    fuenteUrl={secciones['/equipos'].fuenteUrl}
-    />
-)
+const Equipos = () => <EquipmentReplacementPage />
 
 const Series = () => <SportsSeriesPage />
 
