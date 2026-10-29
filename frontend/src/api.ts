@@ -17,3 +17,4 @@ export async function getBSTResponse(keys: string[], weights: number[]): Promise
     return res.json() as Promise<BstResponse>;
 
     }
+
