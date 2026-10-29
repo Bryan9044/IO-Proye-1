@@ -1,4 +1,4 @@
-import type { BstResponse, MatrixMultiplicationResponse } from './types';
+import type { BstResponse, MatrixMultiplicationResponse, SportsSeriesContract, SportsSeriesResponse } from './types';
 
 
 export async function getBSTResponse(keys: string[], weights: number[]): Promise<BstResponse> {
@@ -32,4 +32,32 @@ export async function getMatrixMultiplicationResponse(
     }
 
     return res.json() as Promise<MatrixMultiplicationResponse>;
+}
+
+
+export async function getSportsSeriesResponse(contract: SportsSeriesContract): Promise<SportsSeriesResponse> {
+    let res: Response
+    try {
+        res = await fetch('http://127.0.0.1:8000/seriesDeportivas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(contract),
+        })
+    } catch {
+        throw new Error('No se pudo conectar con FastAPI. Verifique que el backend esté iniciado y que CORS esté habilitado.')
+    }
+
+    if (!res.ok) {
+        let detail: unknown
+        try { detail = (await res.json()).detail } catch { /* respuesta no JSON */ }
+        const message = typeof detail === 'string' ? detail :
+            Array.isArray(detail) ? detail.map((item: { msg?: string }) => item.msg ?? 'Dato inválido').join('; ') :
+            `Error HTTP ${res.status} al calcular la serie.`
+        throw new Error(message)
+    }
+    const data: SportsSeriesResponse = await res.json()
+    if (!Array.isArray(data.matriz) || typeof data.probabilidadEquipoA !== 'number' || typeof data.probabilidadEquipoB !== 'number') {
+        throw new Error('El backend devolvió una respuesta con formato inesperado.')
+    }
+    return data
 }

@@ -20,3 +20,16 @@ export interface MatrixMultiplicationResponse {
     costo: number;
 }
 
+
+export interface SportsSeriesContract {
+    juegos: number;
+    ph: number;
+    pr: number;
+    formato: boolean[];
+}
+
+export interface SportsSeriesResponse {
+    matriz: number[][];
+    probabilidadEquipoA: number;
+    probabilidadEquipoB: number;
+}

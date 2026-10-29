@@ -3,6 +3,7 @@ import Navbar, { type ElementoNavbar } from '../components/Navbar'
 import Card from '../components/Card'
 
 import OptimalBstPage from './OptimalBstPage'
+import SportsSeriesPage from './SportsSeriesPage'
 
 /* ==========================================================================
  *   Configuración de navegación
@@ -31,8 +32,7 @@ const secciones: Record<string, DatosSeccion> = {
         fuente: 'x',
     },
     '/series': {
-        descripcion: 'Aqui va el resto.',
-        fuente: 'x',
+        descripcion: 'Calcule las probabilidades de ganar una serie deportiva y visualice la matriz de resultados.',
     },
     '/bst': {
         descripcion: 'Aqui va el resto.',
@@ -141,14 +141,7 @@ const Equipos = () => (
     />
 )
 
-const Series = () => (
-    <PaginaSimple
-    titulo="Series Deportivas"
-    texto="Aquí va el contenido de la página de proyectos."
-    fuente={secciones['/series'].fuente}
-    fuenteUrl={secciones['/series'].fuenteUrl}
-    />
-)
+const Series = () => <SportsSeriesPage />
 
 const BST = () => (
     <OptimalBstPage />
