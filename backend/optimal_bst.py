@@ -1,8 +1,9 @@
 import json
+import math
 
 def arbol_BST(n,keys: list[str], weight: list[float]):
-    if (n < 1 or n > 10):
-        raise ValueError("Error: El número de llaves debe estar entre 1 a 10")
+    if type(n) is not int or n < 1 or n > 10:
+        raise ValueError("Error: El número de llaves debe ser entero y estar entre 1 a 10")
     if (len(keys) != n):
         raise ValueError("Error: El tamaño de keys solo puede ser n")
 
@@ -15,17 +16,23 @@ def arbol_BST(n,keys: list[str], weight: list[float]):
         if(elemento == "" or elemento.strip() == ""):
             raise ValueError("Error: Las llaves no pueden ser cadenas vacías")
     
-    counter = 0
     for elemento in weight:
-        if not isinstance(elemento, (int, float)) or elemento <= 0:
+        if (
+            isinstance(elemento, bool)
+            or not isinstance(elemento, (int, float))
+            or elemento <= 0
+            or (isinstance(elemento, float) and not math.isfinite(elemento))
+        ):
             raise ValueError("Error: Los pesos deben ser números positivos")
-        counter += elemento
+    pesoMaximo = max(weight)
+    pesosEscalados = [elemento / pesoMaximo for elemento in weight]
+    counter = sum(pesosEscalados)
 
 
-    if len(set(keys)) != len(keys):
+    if len({key.casefold() for key in keys}) != len(keys):
         raise ValueError("Error: Las llaves deben ser únicas")
 
-    weight = [w / counter for w in weight]
+    weight = [w / counter for w in pesosEscalados]
 
     "Parte de arriba va con n+1 empezando por 0 hasta n"
     "Parte de abajo va con n empezando por 1 hasta n+1"
@@ -36,7 +43,7 @@ def arbol_BST(n,keys: list[str], weight: list[float]):
     tableR = [["#" for _ in range(n+1)] for _ in range(n+1)]
     
     "Acomodamos las llaves en orden alfabético"    
-    pares_ordenados = sorted(zip(keys, weight), key=lambda par: par[0].lower())
+    pares_ordenados = sorted(zip(keys, weight), key=lambda par: par[0].casefold())
     keys = [llave for llave, peso in pares_ordenados]
     weight = [peso for llave, peso in pares_ordenados]
 

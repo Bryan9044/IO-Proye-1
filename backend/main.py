@@ -1,11 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from replacement_team import contrato, llenarContextos, calcularG, formatearResultado
 from optimal_bst import arbol_BST
-from pydantic import BaseModel
+from pydantic import BaseModel, StrictFloat, StrictInt
 from matrix_multiplication import multiplicacion_matrices
 from knapsack import mochila
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List,Literal
+from typing import List, Literal, Union
 
 app = FastAPI() 
 
@@ -67,7 +67,7 @@ def postAlgoritmo(paramContrato: contrato):
 
 class ArbolRequest(BaseModel):
     keys: list[str]
-    weights: list[float]
+    weights: list[Union[StrictInt, StrictFloat]]
 
 
 @app.post("/arbolDeBusqueda")
@@ -86,8 +86,8 @@ def obtenerArbol(req: ArbolRequest):
 
 
 class MatrizRequest(BaseModel):
-    n: int
-    dimensiones: list[int]
+    n: StrictInt
+    dimensiones: list[StrictInt]
 
 @app.post("/multiplicacionMatrices")
 def obtenerMatriz(req: MatrizRequest):
