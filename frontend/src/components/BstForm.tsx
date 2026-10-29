@@ -8,11 +8,34 @@ type Props = {
 export default function BstForm({ onSubmit }: Props) {
   const [keysText, setKeysText] = useState('')
   const [weightsText, setWeightsText] = useState('')
+  const [validationError, setValidationError] = useState<string | null>(null)
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const keys = keysText.split(',').map((key) => key.trim())
-    const weights = weightsText.split(',').map((weight) => Number(weight.trim()))
+    const weightEntries = weightsText.split(',').map((weight) => weight.trim())
+    const invalidWeight = weightEntries.find((weight) => weight === '' || !Number.isFinite(Number(weight)))
+
+    if (invalidWeight !== undefined) {
+      setValidationError(`El peso «${invalidWeight || '(vacío)'}» no es válido. Ingresa pesos numéricos positivos separados por comas.`)
+      return
+    }
+
+    const weights = weightEntries.map(Number)
+    if (weights.some((weight) => weight <= 0)) {
+      setValidationError('Cada peso debe ser un número mayor que cero.')
+      return
+    }
+    if (!keysText.trim() || keys.length < 1 || keys.length > 10 || keys.some((key) => !key)) {
+      setValidationError('Ingresa entre 1 y 10 llaves y asegúrate de que ninguna esté vacía.')
+      return
+    }
+    if (keys.length !== weights.length) {
+      setValidationError('Debe haber exactamente un peso por cada llave.')
+      return
+    }
+
+    setValidationError(null)
     onSubmit(keys, weights)
   }
 
@@ -74,7 +97,10 @@ export default function BstForm({ onSubmit }: Props) {
           type="text"
           placeholder="Ejemplo: ana, ben, carlos"
           value={keysText}
-          onChange={(event) => setKeysText(event.target.value)}
+          onChange={(event) => {
+            setKeysText(event.target.value)
+            setValidationError(null)
+          }}
           className={textInputClass}
         />
       </div>
@@ -88,10 +114,14 @@ export default function BstForm({ onSubmit }: Props) {
           inputMode="decimal"
           placeholder="Ejemplo: 0.4, 0.35, 0.25"
           value={weightsText}
-          onChange={(event) => setWeightsText(event.target.value)}
+          onChange={(event) => {
+            setWeightsText(event.target.value)
+            setValidationError(null)
+          }}
           className={textInputClass}
         />
       </div>
+      {validationError && <p role="alert" className="mb-4 text-sm text-red-600 dark:text-red-400">{validationError}</p>}
       <button
         type="submit"
         className={primaryButtonClass}

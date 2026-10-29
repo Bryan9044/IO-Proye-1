@@ -44,24 +44,52 @@ function createJsonDownload(dimensions: number[]) {
 }
 
 export default function MatrixMultiplicationForm({ onSubmit }: Props) {
+  const [matrixCount, setMatrixCount] = useState('2')
   const [dimensionsText, setDimensionsText] = useState('')
+  const [validationError, setValidationError] = useState<string | null>(null)
+
+  const handleCountChange = (value: string) => {
+    setMatrixCount(value)
+    setValidationError(null)
+  }
+
+  const readDimensions = () => {
+    if (!/^([1-9]|10)$/.test(matrixCount)) {
+      setValidationError('Indica un número de matrices entre 1 y 10.')
+      return null
+    }
+    if (!dimensionsText.trim()) {
+      setValidationError('Ingresa las dimensiones de las matrices.')
+      return null
+    }
+    const entries = dimensionsText.split(',').map((dimension) => dimension.trim())
+    const invalidDimension = entries.find((dimension) => dimension === '' || !Number.isSafeInteger(Number(dimension)))
+    if (invalidDimension !== undefined) {
+      setValidationError(`La dimensión «${invalidDimension || '(vacía)'}» no es válida. Ingresa enteros positivos separados por comas.`)
+      return null
+    }
+    const dimensions = parseDimensions(dimensionsText)
+    if (dimensions.some((dimension) => dimension <= 0)) {
+      setValidationError('Cada dimensión debe ser un entero mayor que cero.')
+      return null
+    }
+    if (dimensions.length !== Number(matrixCount) + 1) {
+      setValidationError(`Para ${matrixCount} matrices debes ingresar ${Number(matrixCount) + 1} dimensiones.`)
+      return null
+    }
+    return dimensions
+  }
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const dimensions = parseDimensions(dimensionsText)
-    if (!dimensionsText.trim() || !isValidDimensions(dimensions)) {
-      alert('Ingresa entre 2 y 11 dimensiones enteras y positivas (para 1 a 10 matrices).')
-      return
-    }
+    const dimensions = readDimensions()
+    if (!dimensions || !isValidDimensions(dimensions)) return
     onSubmit(dimensions)
   }
 
   const handleSaveJson = () => {
-    const dimensions = parseDimensions(dimensionsText)
-    if (!dimensionsText.trim() || !isValidDimensions(dimensions)) {
-      alert('Ingresa entre 2 y 11 dimensiones enteras y positivas antes de guardar.')
-      return
-    }
+    const dimensions = readDimensions()
+    if (!dimensions || !isValidDimensions(dimensions)) return
     createJsonDownload(dimensions)
   }
 
@@ -93,6 +121,8 @@ export default function MatrixMultiplicationForm({ onSubmit }: Props) {
       }
 
       setDimensionsText(dimensions.join(', '))
+      setMatrixCount(String(dimensions.length - 1))
+      setValidationError(null)
     } catch (error) {
       alert(error instanceof Error ? error.message : 'No se pudo leer el archivo JSON.')
     } finally {
@@ -106,6 +136,19 @@ export default function MatrixMultiplicationForm({ onSubmit }: Props) {
       className="mx-auto my-6 w-full max-w-xl rounded-xl border border-slate-200 bg-white p-6 text-left shadow-sm dark:border-slate-700 dark:bg-slate-900"
     >
       <div className="mb-5">
+        <label htmlFor="matrix-count" className="mb-2 block font-semibold text-slate-700 dark:text-slate-200">
+          Número de matrices (1 a 10)
+        </label>
+        <input
+          id="matrix-count"
+          type="text"
+          inputMode="numeric"
+          value={matrixCount}
+          onChange={(event) => handleCountChange(event.target.value)}
+          className={textInputClass}
+        />
+      </div>
+      <div className="mb-5">
         <label htmlFor="matrix-dimensions" className="mb-2 block font-semibold text-slate-700 dark:text-slate-200">
           Dimensiones de las matrices
         </label>
@@ -115,13 +158,17 @@ export default function MatrixMultiplicationForm({ onSubmit }: Props) {
           inputMode="numeric"
           placeholder="Ejemplo: 30, 35, 15, 5, 10"
           value={dimensionsText}
-          onChange={(event) => setDimensionsText(event.target.value)}
+          onChange={(event) => {
+            setDimensionsText(event.target.value)
+            setValidationError(null)
+          }}
           className={textInputClass}
         />
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
           Para dimensiones d1, d2, …, dₙ₊₁ se calculan n matrices: A₁(d₁×d₂), A₂(d₂×d₃), ….
         </p>
       </div>
+      {validationError && <p role="alert" className="mb-4 text-sm text-red-600 dark:text-red-400">{validationError}</p>}
       <button
         type="submit"
         className={primaryButtonClass}

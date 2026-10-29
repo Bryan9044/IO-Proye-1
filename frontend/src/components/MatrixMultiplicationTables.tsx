@@ -12,32 +12,48 @@ function formatValue(value: MatrixValue): string {
 
 function renderMatrix(title: string, matrix: MatrixValue[][], shiftValuesToOneBased = false) {
   const columnCount = matrix[0]?.length ?? 0
-  const headerCellClass = 'border-2 border-slate-500 bg-slate-100 px-4 py-3 text-center text-base font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200'
+  const headerCellClass = 'border-b border-r border-slate-300 bg-violet-100 px-3 py-2.5 text-center text-sm font-bold text-violet-950 dark:border-slate-700 dark:bg-violet-950 dark:text-violet-100'
 
   return (
     <section
-      className="flex min-w-0 max-w-[35rem] flex-[1_1_30rem] flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+      className="w-full rounded-2xl border border-slate-200 bg-white p-4 shadow-md sm:p-6 dark:border-slate-700 dark:bg-slate-900"
     >
-      <h2 className="mb-3 text-lg font-semibold text-slate-800 dark:text-slate-100">{title}</h2>
-      <div className="w-full overflow-x-auto rounded-lg">
-        <table className="w-full min-w-[48rem] table-fixed border-collapse border-2 border-slate-600 text-base">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{title}</h2>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            {shiftValuesToOneBased ? 'Cada valor indica dónde dividir la cadena.' : 'Cada valor muestra el costo mínimo del subproblema.'}
+          </p>
+        </div>
+        <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          {matrix.length} matrices
+        </span>
+      </div>
+      <div className="w-full overflow-x-auto rounded-xl border border-slate-300 dark:border-slate-700">
+        <table className="w-full min-w-[38rem] border-separate border-spacing-0 text-sm sm:min-w-0">
           <thead>
             <tr>
-              <th scope="col" className={headerCellClass}>i/j</th>
+              <th scope="col" className={`${headerCellClass} sticky left-0 z-20 min-w-12`}>i/j</th>
               {Array.from({ length: columnCount }, (_, column) => (
-                <th scope="col" key={column} className={headerCellClass}>{column + 1}</th>
+                <th scope="col" key={column} className={`${headerCellClass} min-w-12`}>{column + 1}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {matrix.map((row, rowIndex) => (
-              <tr key={rowIndex} className="odd:bg-white even:bg-slate-50 hover:bg-violet-50 dark:odd:bg-slate-900 dark:even:bg-slate-800/60 dark:hover:bg-violet-950/40">
-                <th scope="row" className={headerCellClass}>{rowIndex + 1}</th>
-                {row.map((value, columnIndex) => (
-                  <td key={columnIndex} className="border-2 border-slate-500 px-4 py-3 text-center font-mono text-base tabular-nums text-slate-700 dark:text-slate-200">
+              <tr key={rowIndex} className="group">
+                <th scope="row" className={`${headerCellClass} sticky left-0 z-10 bg-slate-100 group-hover:bg-violet-100 dark:bg-slate-800 dark:group-hover:bg-violet-950`}>
+                  {rowIndex + 1}
+                </th>
+                {row.map((value, columnIndex) => {
+                  const isEmpty = value === '#'
+                  const isDiagonal = rowIndex === columnIndex
+                  return (
+                  <td key={columnIndex} className={`border-b border-r border-slate-200 px-2 py-2.5 text-center font-mono tabular-nums transition-colors group-hover:bg-violet-50 sm:px-3 dark:border-slate-700 dark:group-hover:bg-violet-950/40 ${isDiagonal ? 'bg-emerald-50 font-semibold text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200' : isEmpty ? 'bg-slate-50 text-slate-300 dark:bg-slate-800/40 dark:text-slate-600' : 'text-slate-800 dark:text-slate-200'}`}>
                     {formatValue(shiftValuesToOneBased && typeof value === 'number' ? value + 1 : value)}
                   </td>
-                ))}
+                  )
+                })}
               </tr>
             ))}
           </tbody>
@@ -50,7 +66,7 @@ function renderMatrix(title: string, matrix: MatrixValue[][], shiftValuesToOneBa
 export default function MatrixMultiplicationTables({ tableM, tableP }: Props) {
   return (
     <div
-      className="mx-auto my-8 flex w-full max-w-6xl flex-wrap items-stretch justify-center gap-6 px-4 text-left"
+      className="mx-auto my-8 flex w-full max-w-7xl flex-col gap-6 px-4 text-left"
     >
       {renderMatrix('Tabla de costos (M)', tableM)}
       {renderMatrix('Tabla de divisiones óptimas (P)', tableP, true)}
