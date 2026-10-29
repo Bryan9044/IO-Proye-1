@@ -4,6 +4,7 @@ import Card from '../components/Card'
 
 import OptimalBstPage from './OptimalBstPage'
 import SportsSeriesPage from './SportsSeriesPage'
+import MatrixMultiplicationPage from './MatrixMultiplicationPage'
 
 /* ==========================================================================
  *   Configuración de navegación
@@ -35,11 +36,11 @@ const secciones: Record<string, DatosSeccion> = {
         descripcion: 'Calcule las probabilidades de ganar una serie deportiva y visualice la matriz de resultados.',
     },
     '/bst': {
-        descripcion: 'Aqui va el resto.',
+        descripcion: 'Busqueda binaria óptima, la cual le permitirá ver el costo mínimo de búsqueda y la estructura del árbol resultante, todo esto aplicando programación dinámica',
         fuente: 'x',
     },
     '/matrices': {
-        descripcion: 'Aqui va el resto.',
+        descripcion: ' Realice una multiplicacion de matrices, la cual le permitira ver el costo minimo de la multiplicación ademas de la parentización optima, todo esto aplicando programación dinamica',
         fuente: 'x',
     },
     '/mochila': {
@@ -148,12 +149,7 @@ const BST = () => (
 )
 
 const Matrices = () => (
-    <PaginaSimple
-    titulo="Multiplicacion de matrices"
-    texto="Aquí va el contenido de la página de contacto."
-    fuente={secciones['/matrices'].fuente}
-    fuenteUrl={secciones['/matrices'].fuenteUrl}
-    />
+    <MatrixMultiplicationPage />
 )
 
 const Mochila = () => (
