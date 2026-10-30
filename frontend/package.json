@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "concurrently -k -n FRONTEND,BACKEND \"vite\" \"cd ../backend && .venv/bin/python -m uvicorn main:app --reload\"",
     "build": "tsc -b && vite build",
+    "test": "vitest run",
     "lint": "eslint .",
     "preview": "vite preview"
   },
