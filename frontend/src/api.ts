@@ -1,3 +1,4 @@
+import type { EquipmentReplacementContract, EquipmentReplacementResponse } from './types'
 import type { BstResponse, MatrixMultiplicationResponse, SportsSeriesContract, SportsSeriesResponse } from './types';
 
 
@@ -58,6 +59,25 @@ export async function getSportsSeriesResponse(contract: SportsSeriesContract): P
     const data: SportsSeriesResponse = await res.json()
     if (!Array.isArray(data.matriz) || typeof data.probabilidadEquipoA !== 'number' || typeof data.probabilidadEquipoB !== 'number') {
         throw new Error('El backend devolvió una respuesta con formato inesperado.')
+    }
+    return data
+}
+
+export async function getEquipmentReplacementResponse(contract: EquipmentReplacementContract): Promise<EquipmentReplacementResponse> {
+    let res: Response
+    try {
+        res = await fetch('http://127.0.0.1:8000/reemplazoEquipos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(contract)
+        })
+    } catch { throw new Error('No se pudo conectar con FastAPI. Verifique que el backend esté iniciado.') }
+    if (!res.ok) {
+        let detail: unknown
+        try { detail = (await res.json()).detail } catch { /* servidor sin JSON */ }
+        throw new Error(typeof detail === 'string' ? detail : `Error HTTP ${res.status} al calcular reemplazo de equipos.`)
+    }
+    const data: EquipmentReplacementResponse = await res.json()
+    if (typeof data.costoMinimo !== 'number' || !Array.isArray(data.periodos)) {
+        throw new Error('El backend devolvió una respuesta inesperada. Debe incluir costoMinimo y periodos.')
     }
     return data
 }

@@ -18,7 +18,9 @@ from seriesDeportivas import (
     formatearResultado as formatearSeries
 )
 
+
 app = FastAPI()
+
 
 # El CORS permite peticiones desde el frontend
 app.add_middleware(
@@ -66,32 +68,48 @@ def obtenerMochila(solicitud: SolicitudMochila):
             objetos
         )
     except ValueError as e:
-        raise HTTPException(status_code=422, detail=str(e))
+        raise HTTPException(
+            status_code=422,
+            detail=str(e)
+        )
 
 
 # ==========================================================
 # ALGORITMO DE REEMPLAZO DE EQUIPOS
 # ==========================================================
 
-@app.post("/reemplazoEquipos")
+@app.post("/reemplazoEquipos", include_in_schema=False)
+@app.post("/api/reemplazo-equipos")
 def postAlgoritmo(paramContrato: contrato):
 
-    if paramContrato.plazo <= 0 or paramContrato.vidaUtil <= 0:
+    # Validar plazo entre 1 y 30 años
+    if not (1 <= paramContrato.plazo <= 30):
         raise HTTPException(
             status_code=400,
-            detail="El plazo y la vida útil deben ser mayores que cero"
+            detail="El plazo debe estar entre 1 y 30 años"
         )
 
+    # Validar vida util entre 1 y 10 años
+    if not (1 <= paramContrato.vidaUtil <= 10):
+        raise HTTPException(
+            status_code=400,
+            detail="La vida útil debe estar entre 1 y 10 años"
+        )
+
+    # Validar cantidad de periodos
     if len(paramContrato.periodos) != paramContrato.vidaUtil:
         raise HTTPException(
             status_code=400,
             detail="La cantidad de periodos debe coincidir con la vida útil"
         )
 
+    # Generar contextos
     paramCtx = llenarContextos(paramContrato)
 
+    # Calcular resultados
     resultado = calcularG(paramContrato, paramCtx)
 
+    # Devolver respuesta JSON
     return formatearResultado(resultado)
 
 
@@ -113,8 +131,12 @@ def obtenerArbol(req: ArbolRequest):
             req.keys,
             req.weights
         )
+
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
     return {
         "tableA": tableA,
@@ -142,8 +164,12 @@ def obtenerMatriz(req: MatrizRequest):
             req.n,
             req.dimensiones
         )
+
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
     return {
         "tableM": tableM,
@@ -157,14 +183,18 @@ def obtenerMatriz(req: MatrizRequest):
 # ALGORITMO DE SERIES DEPORTIVAS
 # ==========================================================
 
-@app.post("/seriesDeportivas")
+@app.post("/seriesDeportivas", include_in_schema=False)
+@app.post("/api/series-deportivas")
 def obtenerSeriesDeportivas(paramContrato: ContratoSeries):
 
-    # Validar cantidad de juegos
-    if paramContrato.juegos <= 0 or paramContrato.juegos % 2 == 0:
+    # Validar cantidad de juegos: impar entre 1 y 11
+    if (
+        not (1 <= paramContrato.juegos <= 11)
+        or paramContrato.juegos % 2 == 0
+    ):
         raise HTTPException(
             status_code=400,
-            detail="La cantidad de juegos debe ser positiva e impar"
+            detail="La cantidad de juegos debe ser impar y estar entre 1 y 11"
         )
 
     # Validar el formato de la serie
@@ -174,15 +204,20 @@ def obtenerSeriesDeportivas(paramContrato: ContratoSeries):
             detail="La cantidad de posiciones del formato debe coincidir con los juegos"
         )
 
-    # Validar probabilidades
-    if not (0 <= paramContrato.ph <= 1 and 0 <= paramContrato.pr <= 1):
+    # Validar probabilidades entre 0 y 1
+    if not (
+        0 <= paramContrato.ph <= 1
+        and 0 <= paramContrato.pr <= 1
+    ):
         raise HTTPException(
             status_code=400,
             detail="Las probabilidades deben estar entre 0 y 1"
         )
 
     # Calcular cantidad de victorias necesarias
-    cantidadPartidos = calcularCantidadPartidos(paramContrato.juegos)
+    cantidadPartidos = calcularCantidadPartidos(
+        paramContrato.juegos
+    )
 
     # Calcular probabilidades complementarias
     qh, qr = formatoSerie(paramContrato)

@@ -33,3 +33,17 @@ export interface SportsSeriesResponse {
     probabilidadEquipoA: number;
     probabilidadEquipoB: number;
 }
+
+export interface EquipmentPeriod { reventa: number; mantenimiento: number }
+export interface EquipmentReplacementContract {
+    algoritmo: 'reemplazo-equipos'; costoInicial: number; plazo: number; vidaUtil: number; periodos: EquipmentPeriod[]
+}
+export interface EquipmentAlternative {
+    desde: number; hasta: number; anosUso: number; costoReemplazo: number; costoFuturo: number; total: number; esOptima: boolean
+}
+export interface EquipmentResultPeriod {
+    periodo: number; funcion: string; alternativas: EquipmentAlternative[]; costoMinimo: number; destinosOptimos?: number[]
+}
+export interface EquipmentReplacementResponse {
+    costoMinimo: number; rutasOptimas?: unknown[]; periodos: EquipmentResultPeriod[]
+}
